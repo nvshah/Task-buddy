@@ -12,13 +12,15 @@ class TaskItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     //we require database instance only to delete task but not to update any things in any specific individual task
-    final database = Provider.of<AppDatabase>(context, listen: false);
+    //final database = Provider.of<AppDatabase>(context, listen: false);
+    final dao = Provider.of<TaskDao>(context, listen: false);
+
     return Slidable(
       actionPane: SlidableDrawerActionPane(),
       child: CheckboxListTile(
         value: task.completed,
         onChanged: (newValue){
-          database.updateTask(task.copyWith(completed: newValue));
+          dao.updateTask(task.copyWith(completed: newValue));
         },
         title: Text(task.name),
         subtitle: Text(task.dueDate?.toString() ?? "No Date"),
@@ -28,7 +30,7 @@ class TaskItem extends StatelessWidget {
           caption: "Delete",
           color: Colors.red,
           icon: Icons.delete,
-          onTap: () => database.deleteTask(task),
+          onTap: () => dao.deleteTask(task),
         )
       ],
     );

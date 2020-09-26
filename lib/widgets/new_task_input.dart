@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:moor_flutter/moor_flutter.dart';
 import 'package:provider/provider.dart';
 
 import '../data/moor_database.dart';
@@ -28,13 +29,17 @@ class _NewTaskInputState extends State<NewTaskInput> {
         controller: textController,
         decoration: InputDecoration(hintText: 'Task name'),
         onSubmitted: (name){
-          final database = Provider.of<AppDatabase>(context, listen: false);
-          final task = Task(
-            name: name,
-            dueDate: newTaskDate,
+          //final database = Provider.of<AppDatabase>(context, listen: false);
+          final dao = Provider.of<TaskDao>(context);
+
+          //Since id is auto-incrementing We are omitting it
+          //Since completed has default value set to false, it's to been omitted
+          final task = TasksCompanion(
+            name: Value(name),
+            dueDate: Value(newTaskDate),
           );
           //insert task in database
-          database.insertTask(task);
+          dao.insertTask(task);
           resetValueAfterSubmit();
         },
       ),

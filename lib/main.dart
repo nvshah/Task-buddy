@@ -11,8 +11,13 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Provider(
-      builder: (_) => AppDatabase().taskDao,
+    final db = AppDatabase();
+    return MultiProvider(
+      providers: [
+        Provider(builder: (_) => db.taskDao,),
+        Provider(builder: (_) => db.tagDao,),
+      ],
+      //builder: (_) => AppDatabase().taskDao,
       child: MaterialApp(
         title: 'Task Buddy',
         theme: ThemeData(

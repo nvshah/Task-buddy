@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../data/moor_database.dart';
 import '../widgets/task_item.dart';
 import '../widgets/new_task_input.dart';
+import '../widgets/new_tag_input.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -32,19 +33,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   //Build the List of Task items via StreamBuilder
-  StreamBuilder<List<Task>> _buildTaskList(BuildContext context) {
+  StreamBuilder<List<TaskWithTag>> _buildTaskList(BuildContext context) {
     //final database = Provider.of<AppDatabase>(context);
     final dao = Provider.of<TaskDao>(context);
     return StreamBuilder(
       stream: showCompletedTask ? dao.watchCompletedTasks() : dao.watchAllTasks(),
-      builder: (context, AsyncSnapshot<List<Task>> snapshot) {
+      builder: (context, AsyncSnapshot<List<TaskWithTag>> snapshot) {
         final tasks = snapshot.data ?? List();
         //List of Tasks
         return ListView.builder(
           itemCount: tasks.length,
           itemBuilder: (_, index) {
             final itemTask = tasks[index];
-            return TaskItem(task: itemTask);
+            return TaskItem(item: itemTask);
           },
         );
       },
@@ -69,6 +70,8 @@ class _HomePageState extends State<HomePage> {
           ),
           //NEW TASK
           NewTaskInput(),
+          //New Tag
+          NewTagInput(),
         ],
       ),
     );

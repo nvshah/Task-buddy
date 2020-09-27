@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:moor_flutter/moor_flutter.dart';
+import 'package:moor/moor.dart';
 import 'package:provider/provider.dart';
 
 import '../data/moor_database.dart';
+import './tags_dropdown.dart';
 
 class NewTaskInput extends StatefulWidget {
   const NewTaskInput({
@@ -15,20 +17,40 @@ class NewTaskInput extends StatefulWidget {
 class _NewTaskInputState extends State<NewTaskInput> {
   DateTime newTaskDate;
   TextEditingController textController;
+  Tag selectedTag;
 
   @override
   void initState() {
     super.initState();
     textController = TextEditingController();
   }
-  
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: <Widget>[
+          //Task Name
+          buildTextField(context),
+          //Color Picker
+          buildTagSelector(context),
+          //Date Picker
+          buildDateButton(context),
+        ],
+      ),
+    );
+  }
+
   //Provide Widget for Inputting Text Field
-  Expanded buildTextField(BuildContext context){
+  Expanded buildTextField(BuildContext context) {
     return Expanded(
+      flex: 1,
       child: TextField(
         controller: textController,
         decoration: InputDecoration(hintText: 'Task name'),
-        onSubmitted: (name){
+        onSubmitted: (name) {
           //final database = Provider.of<AppDatabase>(context, listen: false);
           final dao = Provider.of<TaskDao>(context);
 
@@ -45,17 +67,17 @@ class _NewTaskInputState extends State<NewTaskInput> {
       ),
     );
   }
-
-  //Reset - Text input Field for new inputs
-  void resetValueAfterSubmit(){
-    setState(() {
-     newTaskDate = null;
-     textController.clear(); 
-    });
-  }
   
+  //build widget to select tag for current task
+  TagsDropdown buildTagSelector(BuildContext context) {
+    return TagsDropdown(
+      selectedTag: selectedTag,
+      selectTagCallBack: selectTagHandler,
+    );
+  }
+
   //build date picker that allows you to pick date from
-  IconButton buildDateButton(BuildContext context){
+  IconButton buildDateButton(BuildContext context) {
     return IconButton(
       icon: Icon(Icons.calendar_today),
       onPressed: () async {
@@ -68,19 +90,20 @@ class _NewTaskInputState extends State<NewTaskInput> {
       },
     );
   }
+  
+  ///When new tag is selected by user, then to update UI post selection
+  void selectTagHandler(Tag tag){
+    setState(() {
+     selectedTag = tag; 
+    });
+  }
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          //Task Name
-          buildTextField(context),
-          //Date Picker
-          buildDateButton(context),
-      ],),
-    );
+  //Reset - Text input Field for new inputs
+  void resetValueAfterSubmit() {
+    setState(() {
+      newTaskDate = null;
+      selectedTag = null;
+      textController.clear();
+    });
   }
 }
